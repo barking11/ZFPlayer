@@ -34,6 +34,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZFLandScapeControlView : UIView
 
+@property (nonatomic, strong) UIButton *adCloseBtn;
+
+@property (nonatomic, copy) void(^adCloseHandler)(void);
+
+@property (nonatomic, copy) void(^mirrorHandler)(void);
+
+@property (nonatomic, copy) void(^zhuiHandler)(void);
+
+@property (nonatomic, strong) UIView *adView;
+
 /// 顶部工具栏
 @property (nonatomic, strong, readonly) UIView *topToolView;
 

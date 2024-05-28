@@ -77,8 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateRotateView:(ZFPlayerView *)rotateView
            containerView:(UIView *)containerView;
 
-- (UIView *)fullScreenContainerView;
-
 - (BOOL)isSuppprtInterfaceOrientation:(UIInterfaceOrientation)orientation;
 
 + (ZFInterfaceOrientationMask)supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window;

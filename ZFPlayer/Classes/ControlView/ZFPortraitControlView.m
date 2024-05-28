@@ -51,6 +51,16 @@
 
 @property (nonatomic, assign) BOOL isShow;
 
+@property (nonatomic, strong) UIButton *backBtn;
+
+@property (nonatomic, strong) UIButton *mirrorBtn;
+
+@property (nonatomic, strong) UIButton *zhuiBtn;
+
+@property (nonatomic, strong) UIButton *fastForwardBtn;
+
+@property (nonatomic, strong) UIButton *fastRewindBtn;
+
 @end
 
 @implementation ZFPortraitControlView
@@ -61,11 +71,19 @@
         [self addSubview:self.topToolView];
         [self addSubview:self.bottomToolView];
         [self addSubview:self.playOrPauseBtn];
+        [self addSubview:self.fastForwardBtn];
+        [self addSubview:self.fastRewindBtn];
         [self.topToolView addSubview:self.titleLabel];
+        [self.topToolView addSubview:self.backBtn];
+        [self.topToolView addSubview:self.mirrorBtn];
+        [self.topToolView addSubview:self.zhuiBtn];
         [self.bottomToolView addSubview:self.currentTimeLabel];
         [self.bottomToolView addSubview:self.slider];
         [self.bottomToolView addSubview:self.totalTimeLabel];
         [self.bottomToolView addSubview:self.fullScreenBtn];
+        
+        [self addSubview:self.adView];
+        [self addSubview:self.adCloseBtn];
         
         // 设置子控件的响应事件
         [self makeSubViewsAction];
@@ -93,11 +111,28 @@
     min_h = 40;
     self.topToolView.frame = CGRectMake(min_x, min_y, min_w, min_h);
     
+    min_y = 5;
+    min_w = 40;
+    min_h = 40;
+    self.backBtn.frame = CGRectMake(min_x, min_y, min_w, min_h);
+    
     min_x = 15;
     min_y = 5;
     min_w = min_view_w - min_x - 15;
     min_h = 30;
     self.titleLabel.frame = CGRectMake(min_x, min_y, min_w, min_h);
+    
+    min_w = 40;
+    min_h = 40;
+    min_x = self.topToolView.zf_width - min_w - min_margin;
+    min_y = 5;
+    self.mirrorBtn.frame = CGRectMake(min_x, min_y, min_w, min_h);
+    
+    min_w = 40;
+    min_h = 40;
+    min_x = self.topToolView.zf_width - min_w * 2 - min_margin;
+    min_y = 5.5;
+    self.zhuiBtn.frame = CGRectMake(min_x, min_y, min_w, min_h);
     
     min_h = 40;
     min_x = 0;
@@ -111,6 +146,22 @@
     min_h = min_w;
     self.playOrPauseBtn.frame = CGRectMake(min_x, min_y, min_w, min_h);
     self.playOrPauseBtn.center = self.center;
+    
+    min_x = self.playOrPauseBtn.zf_left - 30 - min_w;
+    self.fastRewindBtn.frame = CGRectMake(min_x, min_y, min_w, min_h);
+    self.fastRewindBtn.zf_centerY = self.playOrPauseBtn.zf_centerY;
+    
+    min_x = self.playOrPauseBtn.zf_right + 30;
+    self.fastForwardBtn.frame = CGRectMake(min_x, min_y, min_w, min_h);
+    self.fastForwardBtn.zf_centerY = self.playOrPauseBtn.zf_centerY;
+
+    min_w = min_view_w / 3 * 2;
+    min_h = min_view_h / 3 * 2;
+    min_x = (min_view_w - min_w) / 2;
+    min_y = (min_view_h - min_h) / 2;
+    self.adView.frame = CGRectMake(min_x, min_y, min_w, min_h);
+    
+    self.adCloseBtn.frame = CGRectMake(min_view_w - 60, 20, 45, 16);
     
     min_x = min_margin;
     min_w = 62;
@@ -151,11 +202,41 @@
 }
 
 - (void)makeSubViewsAction {
+    [self.backBtn addTarget:self action:@selector(backBtnClickAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.mirrorBtn addTarget:self action:@selector(mirrirBtnClickAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.playOrPauseBtn addTarget:self action:@selector(playPauseButtonClickAction:) forControlEvents:UIControlEventTouchUpInside];
     [self.fullScreenBtn addTarget:self action:@selector(fullScreenButtonClickAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.adCloseBtn addTarget:self action:@selector(adCloseAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.fastForwardBtn addTarget:self action:@selector(fastForward:) forControlEvents:UIControlEventTouchUpInside];
+    [self.fastRewindBtn addTarget:self action:@selector(fastRewind:) forControlEvents:UIControlEventTouchUpInside];
+    [self.zhuiBtn addTarget:self action:@selector(zhuiAction:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 #pragma mark - action
+
+- (void)backBtnClickAction:(UIButton *)sender {
+    if (_backHandler) {
+        _backHandler();
+    }
+}
+
+- (void)mirrirBtnClickAction:(UIButton *)sender {
+    if (_mirrorHandler) {
+        _mirrorHandler();
+    }
+}
+
+- (void)adCloseAction:(UIButton *)sender {
+    if (_adCloseHandler) {
+        _adCloseHandler();
+    }
+}
+
+- (void)zhuiAction:(UIButton *)sender {
+    if (_zhuiHandler) {
+        _zhuiHandler();
+    }
+}
 
 - (void)playPauseButtonClickAction:(UIButton *)sender {
     [self playOrPause];
@@ -173,6 +254,18 @@
 
 - (void)playBtnSelectedState:(BOOL)selected {
     self.playOrPauseBtn.selected = selected;
+}
+
+- (void)fastForward:(UIButton *)sender {
+    [self.player seekToTime:self.player.currentTime + 10 completionHandler:^(BOOL finished) {
+            
+    }];
+}
+
+- (void)fastRewind:(UIButton *)sender {
+    [self.player seekToTime:self.player.currentTime - 10 completionHandler:^(BOOL finished) {
+            
+    }];
 }
 
 #pragma mark - ZFSliderViewDelegate
@@ -241,6 +334,8 @@
     self.bottomToolView.zf_y         = self.zf_height - self.bottomToolView.zf_height;
     self.playOrPauseBtn.alpha        = 1;
     self.player.statusBarHidden      = NO;
+    self.fastRewindBtn.alpha         = 1;
+    self.fastForwardBtn.alpha        = 1;
 }
 
 - (void)hideControlView {
@@ -251,6 +346,8 @@
     self.playOrPauseBtn.alpha        = 0;
     self.topToolView.alpha           = 0;
     self.bottomToolView.alpha        = 0;
+    self.fastRewindBtn.alpha         = 0;
+    self.fastForwardBtn.alpha        = 0;
 }
 
 - (BOOL)shouldResponseGestureWithPoint:(CGPoint)point withGestureType:(ZFPlayerGestureType)type touch:(nonnull UITouch *)touch {
@@ -307,6 +404,28 @@
 
 #pragma mark - getter
 
+- (UIView *)adView {
+    if (!_adView) {
+        _adView = [UIView new];
+        _adView.hidden = YES;
+    }
+    return _adView;
+}
+
+- (UIButton *)adCloseBtn {
+    if (!_adCloseBtn) {
+        _adCloseBtn = [UIButton new];
+        _adCloseBtn.hidden = YES;
+        [_adCloseBtn setTitle:@"关闭广告" forState:UIControlStateNormal];
+        [_adCloseBtn setTitleColor:UIColor.whiteColor forState:UIControlStateNormal];
+        _adCloseBtn.titleLabel.font = [UIFont systemFontOfSize:7];
+        _adCloseBtn.layer.cornerRadius = 8;
+        _adCloseBtn.layer.borderColor = UIColor.whiteColor.CGColor;
+        _adCloseBtn.layer.borderWidth = 0.6;
+    }
+    return _adCloseBtn;
+}
+
 - (UIView *)topToolView {
     if (!_topToolView) {
         _topToolView = [[UIView alloc] init];
@@ -325,6 +444,30 @@
     return _titleLabel;
 }
 
+- (UIButton *)backBtn {
+    if (!_backBtn) {
+        _backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_backBtn setImage:ZFPlayer_Image(@"ZFPlayer_back_full") forState:UIControlStateNormal];
+    }
+    return _backBtn;
+}
+
+- (UIButton *)mirrorBtn {
+    if (!_mirrorBtn) {
+        _mirrorBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_mirrorBtn setImage:[UIImage imageNamed:@"play_mirror"] forState:UIControlStateNormal];
+    }
+    return _mirrorBtn;
+}
+
+- (UIButton *)zhuiBtn {
+    if (!_zhuiBtn) {
+        _zhuiBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_zhuiBtn setImage:[UIImage imageNamed:@"play_zhui"] forState:UIControlStateNormal];
+    }
+    return _zhuiBtn;
+}
+
 - (UIView *)bottomToolView {
     if (!_bottomToolView) {
         _bottomToolView = [[UIView alloc] init];
@@ -341,6 +484,22 @@
         [_playOrPauseBtn setImage:ZFPlayer_Image(@"new_allPause_44x44_") forState:UIControlStateSelected];
     }
     return _playOrPauseBtn;
+}
+
+- (UIButton *)fastRewindBtn {
+    if (!_fastRewindBtn) {
+        _fastRewindBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_fastRewindBtn setImage:[UIImage imageNamed:@"play_backward_10"] forState:UIControlStateNormal];
+    }
+    return _fastRewindBtn;;
+}
+
+- (UIButton *)fastForwardBtn {
+    if (!_fastForwardBtn) {
+        _fastForwardBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        [_fastForwardBtn setImage:[UIImage imageNamed:@"play_forward_10"] forState:UIControlStateNormal];
+    }
+    return _fastForwardBtn;;
 }
 
 - (UILabel *)currentTimeLabel {
@@ -379,7 +538,7 @@
 - (UIButton *)fullScreenBtn {
     if (!_fullScreenBtn) {
         _fullScreenBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        [_fullScreenBtn setImage:ZFPlayer_Image(@"ZFPlayer_fullscreen") forState:UIControlStateNormal];
+        [_fullScreenBtn setImage:[UIImage imageNamed:@"play_fullscreen"] forState:UIControlStateNormal];
     }
     return _fullScreenBtn;
 }

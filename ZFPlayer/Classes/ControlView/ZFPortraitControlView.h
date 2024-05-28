@@ -34,6 +34,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ZFPortraitControlView : UIView
 
+@property (nonatomic, strong) UIView *adView;
+
+@property (nonatomic, strong) UIButton *adCloseBtn;
+
+@property (nonatomic, copy) void(^adCloseHandler)(void);
+
+@property (nonatomic, copy) void(^backHandler)(void);
+
+@property (nonatomic, copy) void(^mirrorHandler)(void);
+
+@property (nonatomic, copy) void(^zhuiHandler)(void);
+
 /// 底部工具栏
 @property (nonatomic, strong, readonly) UIView *bottomToolView;
 

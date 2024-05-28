@@ -247,7 +247,7 @@
 
 - (UIView *)fullScreenContainerView {
     if (self.fullScreenMode == ZFFullScreenModeLandscape) {
-        return self.landscapeRotationManager.fullScreenContainerView;
+        return self.landscapeRotationManager.landscapeViewController.view;
     } else if (self.fullScreenMode == ZFFullScreenModePortrait) {
         return self.portraitViewController.view;
     }
